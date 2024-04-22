@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[774],{3891:e=>{e.exports=JSON.parse('{"sourceUrl":"https://github.com/R14GENIE/FondationLegacyProject/blob/master","baseUrl":"/FondationLegacyProject/","classOrder":[],"apiCategories":[]}')}}]);
