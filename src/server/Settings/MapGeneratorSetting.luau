@@ -1,4 +1,4 @@
 return {
-    sizeX = 10,
-    sizeY = 10,
+    sizeX = 3,
+    sizeY = 3,
 }
