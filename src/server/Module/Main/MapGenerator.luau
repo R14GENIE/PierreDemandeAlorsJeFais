@@ -165,6 +165,8 @@ end
 
 function findLeftPoint(pointPosX: number, pointPosY: number, realY: number, point: Part)
 
+    --Checking if it's not a border
+
     if pointPosX == 0 then
 
         return
@@ -174,6 +176,8 @@ function findLeftPoint(pointPosX: number, pointPosY: number, realY: number, poin
     local i = (pointPosX * realY) + pointPosY
 
     local pointLeft = i - realY
+
+    --Getting the point
 
     local leftPointInstance: any = mapGeneratedFolder["Point"..tostring(pointLeft)]
     discoverPoint(point, leftPointInstance)
@@ -196,13 +200,18 @@ function findTopPoint(pointPosX: number, pointPosY: number, realY: number, point
 end
 
 function generateMap()
+
 	--Clearing the current map
 	mapGeneratedFolder:ClearAllChildren()
     startPointObjectValue.Value = nil
     endPointObjectValue.Value = nil
 
+    --Getting the realX and realY X-1 to go from 0 to X
+
     local realX = mapGeneratorLiveConfiguration:GetAttribute("sizeX") -1
     local realY = mapGeneratorLiveConfiguration:GetAttribute("sizeY") -1
+
+    --Creating the base pose for the point
 
 	local pointPos: Vector3 = Vector3.new(
 		0 - (realX / 2),
@@ -217,12 +226,23 @@ function generateMap()
 
 		for pointPosY: number = 0, realY, 1 do
 
+            --Creating the point
 			local newPoint = mapPoint:Clone()
 			newPoint.Parent = mapGeneratedFolder
 
+            newPoint.Name = "Point"..tostring(pointCount)
+            newPoint.BeamAttachment.Name = "AttachmentPoint"..tostring(pointCount)
+
+            --Giving the surface gui of the point
+
+            local surfaceGuiForPoint = surfaceGuiNumber:Clone()
+            surfaceGuiForPoint.Parent = visualSurfaceGuiFolder
+            surfaceGuiForPoint.Adornee = newPoint
+            surfaceGuiForPoint.TextLabel.Text = tostring(pointCount)
+
 			newPoint.Position = pointPos
 
-			pointPos += Vector3.new(0, 0, 2)
+            --Linking all the trigger about the status
 
 			newPoint:GetAttributeChangedSignal("StartPoint"):Connect(function()
 				changePointStatus(newPoint, "StartPoint")
@@ -236,22 +256,21 @@ function generateMap()
 				changePointStatus(newPoint, "BlockPoint")
 			end)
 
-            newPoint.Name = "Point"..tostring(pointCount)
-            newPoint.BeamAttachment.Name = "AttachmentPoint"..tostring(pointCount)
-
-            local surfaceGuiForPoint = surfaceGuiNumber:Clone()
-            surfaceGuiForPoint.Parent = visualSurfaceGuiFolder
-            surfaceGuiForPoint.Adornee = newPoint
-            surfaceGuiForPoint.TextLabel.Text = tostring(pointCount)
+            --Make the point discover top and left point around him
 
             findTopPoint(pointPosX, pointPosY, realY + 1, newPoint)
             findLeftPoint(pointPosX, pointPosY, realY + 1, newPoint)
 
+            --Incrementation of point count and the position
+
             pointCount += 1
+            pointPos += Vector3.new(0, 0, 2)
 
             task.wait()
 
 		end
+
+        --Incrementation of X and putting back Y to the default
 
 		pointPos = Vector3.new(pointPos.X + 2, 0, 0 - (realY / 2))
 
@@ -268,15 +287,20 @@ local MapGeneratorModule = {}
 
 function MapGeneratorModule.Start()
     
+    --Creating the MapGeneratorControl
+
 	mapGeneratorLiveConfiguration = Instance.new("Configuration")
 	mapGeneratorLiveConfiguration.Name = "MapGeneratorControl"
 	mapGeneratorLiveConfiguration.Parent = game.ServerScriptService
-	--Creating the live configuration
+
+	--Creating the live configuration in the mapGenerator
 	for attribute: string, attributeValue: any in pairs(mapGeneratorConfig) do
 		mapGeneratorLiveConfiguration:SetAttribute(attribute, attributeValue)
 	end
 
 	mapGeneratorLiveConfiguration:SetAttribute("Regeneration", false)
+
+    --Creating the start point value
 
 	startPointObjectValue = Instance.new("ObjectValue")
 	startPointObjectValue.Name = "StartPoint"
@@ -287,6 +311,8 @@ function MapGeneratorModule.Start()
         print("Current Start Point : "..tostring(startPointObjectValue.Value))
 
     end)
+
+    --Creating the end point value
 
 	endPointObjectValue = Instance.new("ObjectValue")
 	endPointObjectValue.Name = "EndPoint"
@@ -315,14 +341,20 @@ function MapGeneratorModule.Start()
 	mapPoint:SetAttribute("BlockPoint", false)
 	mapPoint:SetAttribute("changingStatus", false)
 
+    --Giving the LinkFolder the model
+
     local linkFolder = Instance.new("Folder")
     linkFolder.Name = "LinkFolder"
     linkFolder.Parent = mapPoint
+
+    --Putting the SurfaceGui to have a visual number
     
 	surfaceGuiNumber = Instance.new("SurfaceGui")
 	surfaceGuiNumber.LightInfluence = 0
 	surfaceGuiNumber.Face = Enum.NormalId.Top
     surfaceGuiNumber.SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud
+
+    --Putting the text in the surface
     
     local textInsideSurface = Instance.new("TextLabel")
     textInsideSurface.Parent = surfaceGuiNumber
@@ -332,9 +364,13 @@ function MapGeneratorModule.Start()
     textInsideSurface.Size = UDim2.new(1, 0, 1, 0)
     textInsideSurface.TextScaled = true
 
+    --Creating the beam point for the visual
+
     local beamAttachment = Instance.new("Attachment")
     beamAttachment.Name = "BeamAttachment"
     beamAttachment.Parent = mapPoint
+
+    --Creating the beam that will be clone
 
     beamToClone = Instance.new("Beam")
     beamToClone.FaceCamera = true
