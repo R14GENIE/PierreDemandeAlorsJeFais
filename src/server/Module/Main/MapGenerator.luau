@@ -1,3 +1,9 @@
+--[=[
+	@class MapGeneratorModule
+]=]
+
+
+
 --[[
     Require
 ]]
@@ -31,6 +37,14 @@ local beamToClone: Beam
 --[[
     Function
 ]]
+
+--[=[
+    @within MapGeneratorModule
+    @param point -- Necessary it need a map point to change it
+    @param changingStat -- The status who is changing
+
+    Function who handle step by step a AStar
+]=]
 
 function changePointStatus(point: Part, changingStat: string)
 
@@ -146,14 +160,22 @@ function changePointStatus(point: Part, changingStat: string)
 
 end
 
-function discoverPoint(pointDiscovering: any, pointDiscovered: any)
+--[=[
+    @within MapGeneratorModule
+    @param pointDiscovering -- The point who is discovered
+    @param pointDiscovered -- The point who discover
+
+    Function who make link between two point
+]=]
+
+function discoverPoint(pointDiscovering: Part, pointDiscovered: Part)
 
     local discoveredObjectValue = Instance.new("ObjectValue")
-    discoveredObjectValue.Parent = pointDiscovered.LinkFolder
+    discoveredObjectValue.Parent = pointDiscovered:FindFirstChild("LinkFolder")
     discoveredObjectValue.Value = pointDiscovering
 
     local discoveringObjectValue = Instance.new("ObjectValue")
-    discoveringObjectValue.Parent = pointDiscovering.LinkFolder
+    discoveringObjectValue.Parent = pointDiscovering:FindFirstChild("LinkFolder")
     discoveringObjectValue.Value = pointDiscovered
 
     local beamBetween = beamToClone:Clone()
@@ -162,6 +184,16 @@ function discoverPoint(pointDiscovering: any, pointDiscovered: any)
     beamBetween.Parent = pointDiscovering
 
 end
+
+--[=[
+    @within MapGeneratorModule
+    @param pointPosX -- The point Pos X
+    @param pointPosY -- The point Pos Y
+    @param realY -- The real Y of the Map
+    @param point -- The point who need to know his left one
+
+    Function who make point discover his left one
+]=]
 
 function findLeftPoint(pointPosX: number, pointPosY: number, realY: number, point: Part)
 
@@ -184,6 +216,16 @@ function findLeftPoint(pointPosX: number, pointPosY: number, realY: number, poin
 
 end
 
+--[=[
+    @within MapGeneratorModule
+    @param pointPosX -- The point Pos X
+    @param pointPosY -- The point Pos Y
+    @param realY -- The real Y of the Map
+    @param point -- The point who need to know his top one
+
+    Function who make point discover his top one
+]=]
+
 function findTopPoint(pointPosX: number, pointPosY: number, realY: number, point: Part)
     
     if pointPosY == 0 then
@@ -198,6 +240,12 @@ function findTopPoint(pointPosX: number, pointPosY: number, realY: number, point
     discoverPoint(point, topPointInstance)
     
 end
+
+--[=[
+    @within MapGeneratorModule
+   
+    Function who generate the map
+]=]
 
 function generateMap()
 
@@ -279,11 +327,15 @@ function generateMap()
 end
 
 
---[[
-    Module
-]]
+
 
 local MapGeneratorModule = {}
+
+--[=[
+    @within MapGeneratorModule
+   
+    The start function
+]=]
 
 function MapGeneratorModule.Start()
 

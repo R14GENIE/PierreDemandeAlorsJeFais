@@ -1,7 +1,8 @@
 --[=[
-	@class Genius Server Script Init
+	@class InitMain
 
-	It init the server
+	No function at all it require MapGenerator and AStar
+
 ]=]
 
 require(game.ServerScriptService.Module.Main.MapGenerator).Start()

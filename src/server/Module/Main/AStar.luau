@@ -1,3 +1,7 @@
+--[=[
+	@class AStar
+]=]
+
 --[[
     Value
 ]]
@@ -23,6 +27,12 @@ local endPointObjectValue: any
 --[[
     Function
 ]]
+
+--[=[
+    @within AStar
+
+    Function who handle step by step a AStar
+]=]
 
 function aStarStep()
     warn("Step!")
@@ -123,6 +133,12 @@ end
 ]]
 
 local AStarModule = {}
+
+--[=[
+    @within AStar
+
+    Function who start all the script to be ready to do some AStar stuff
+]=]
 
 function AStarModule.Start()
     
