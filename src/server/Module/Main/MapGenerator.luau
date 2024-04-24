@@ -20,8 +20,8 @@ local pointColorList = {
 ]]
 
 local mapGeneratorLiveConfiguration: Configuration
-local mapGeneratedFolder: Folder = workspace.Map
-local visualSurfaceGuiFolder: Folder = workspace.VisualSurfaceGui
+local mapGeneratedFolder: Folder
+local visualFolder: Folder
 local mapPoint: Part
 local startPointObjectValue: ObjectValue
 local endPointObjectValue: ObjectValue
@@ -236,7 +236,7 @@ function generateMap()
             --Giving the surface gui of the point
 
             local surfaceGuiForPoint = surfaceGuiNumber:Clone()
-            surfaceGuiForPoint.Parent = visualSurfaceGuiFolder
+            surfaceGuiForPoint.Parent = visualFolder
             surfaceGuiForPoint.Adornee = newPoint
             surfaceGuiForPoint.TextLabel.Text = tostring(pointCount)
 
@@ -286,7 +286,19 @@ end
 local MapGeneratorModule = {}
 
 function MapGeneratorModule.Start()
+
+    --Create the Map container folder
+
+    mapGeneratedFolder = Instance.new("Folder")
+    mapGeneratedFolder.Parent = workspace
+    mapGeneratedFolder.Name = "MapGenerator"
+
+    -- VisualFolder
     
+    visualFolder = Instance.new("Folder")
+    visualFolder.Parent = workspace
+    visualFolder.Name = "VisualMap"
+
     --Creating the MapGeneratorControl
 
 	mapGeneratorLiveConfiguration = Instance.new("Configuration")
