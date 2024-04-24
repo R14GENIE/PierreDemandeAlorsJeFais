@@ -5,4 +5,4 @@
 ]=]
 
 require(game.ServerScriptService.Module.Main.MapGenerator).Start()
-require(game.ServerScriptService.Module.Main.AStar)
+require(game.ServerScriptService.Module.Main.AStar).Start()

@@ -157,37 +157,41 @@ function discoverPoint(pointDiscovering: any, pointDiscovered: any)
     discoveringObjectValue.Value = pointDiscovered
 
     local beamBetween = beamToClone:Clone()
-    beamBetween.Attachment0 = pointDiscovering.BeamAttachment 
-    beamBetween.Attachment1 = pointDiscovered.BeamAttachment
-    beamBetween.Parent = visualSurfaceGuiFolder
+    beamBetween.Attachment0 = pointDiscovering["Attachment"..pointDiscovering.Name] 
+    beamBetween.Attachment1 = pointDiscovered["Attachment"..pointDiscovered.Name] 
+    beamBetween.Parent = pointDiscovering
 
 end
 
-function findLeftPoint(pointPosX: number, pointPosY: number, realX: number, point: Part)
+function findLeftPoint(pointPosX: number, pointPosY: number, realY: number, point: Part)
 
     if pointPosX == 0 then
 
         return
 
 	end
-	
-	realX += 1
 
-    local topPoint: any = mapGeneratedFolder["Point"..tostring((realX * (pointPosX-1)) + pointPosY )]
-    discoverPoint(point, topPoint)
+    local i = (pointPosX * realY) + pointPosY
+
+    local pointLeft = i - realY
+
+    local leftPointInstance: any = mapGeneratedFolder["Point"..tostring(pointLeft)]
+    discoverPoint(point, leftPointInstance)
 
 end
 
-function findTopPoint(pointPosX: number, pointPosY: number, realX: number, point: Part)
+function findTopPoint(pointPosX: number, pointPosY: number, realY: number, point: Part)
     
     if pointPosY == 0 then
         return
     end
 
-    realX += 1
+    local i = (pointPosX * realY) + pointPosY
 
-    local leftPoint: any = mapGeneratedFolder["Point"..tostring((realX * (pointPosX)) + (pointPosY - 1) )]
-    discoverPoint(point, leftPoint)
+    local pointTop = i - 1
+
+	local topPointInstance: any = mapGeneratedFolder["Point"..tostring(pointTop)]
+    discoverPoint(point, topPointInstance)
     
 end
 
@@ -233,14 +237,15 @@ function generateMap()
 			end)
 
             newPoint.Name = "Point"..tostring(pointCount)
+            newPoint.BeamAttachment.Name = "AttachmentPoint"..tostring(pointCount)
 
             local surfaceGuiForPoint = surfaceGuiNumber:Clone()
             surfaceGuiForPoint.Parent = visualSurfaceGuiFolder
             surfaceGuiForPoint.Adornee = newPoint
             surfaceGuiForPoint.TextLabel.Text = tostring(pointCount)
 
-            findTopPoint(pointPosX, pointPosY, realX, newPoint)
-            findLeftPoint(pointPosX, pointPosY, realX, newPoint)
+            findTopPoint(pointPosX, pointPosY, realY + 1, newPoint)
+            findLeftPoint(pointPosX, pointPosY, realY + 1, newPoint)
 
             pointCount += 1
 
@@ -262,6 +267,7 @@ end
 local MapGeneratorModule = {}
 
 function MapGeneratorModule.Start()
+    
 	mapGeneratorLiveConfiguration = Instance.new("Configuration")
 	mapGeneratorLiveConfiguration.Name = "MapGeneratorControl"
 	mapGeneratorLiveConfiguration.Parent = game.ServerScriptService
@@ -283,7 +289,7 @@ function MapGeneratorModule.Start()
     end)
 
 	endPointObjectValue = Instance.new("ObjectValue")
-	endPointObjectValue.Name = "EndPont"
+	endPointObjectValue.Name = "EndPoint"
 	endPointObjectValue.Parent = mapGeneratorLiveConfiguration
 
     endPointObjectValue:GetPropertyChangedSignal("Value"):Connect(function()
